@@ -1,6 +1,7 @@
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using Zeebe.Client.Accelerator.Extensions;
+using Zeebe_Client_Accelerator_Showcase.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +11,22 @@ builder.Services.BootstrapZeebe(
     typeof(Program).Assembly);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
+
+// Change the value to toggle between error and non-error situation
+bool disposedErrorShowCase = true;
+
+if (disposedErrorShowCase)
+{
+    builder.Services.AddScoped<IUseCaseService, NonWorkingUseCaseService>();
+}
+else
+{
+    builder.Services.AddScoped<IUseCaseService, WorkingUseCaseService>();
+}
+
+builder.Services.AddScoped<DisposableService>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>

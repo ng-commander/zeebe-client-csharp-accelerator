@@ -1,5 +1,6 @@
 ﻿using Zeebe.Client.Accelerator.Abstractions;
 using Zeebe.Client.Accelerator.Attributes;
+using Zeebe_Client_Accelerator_Showcase.Services;
 
 namespace Zeebe_Client_Accelerator_Showcase.Worker
 {
@@ -7,10 +8,12 @@ namespace Zeebe_Client_Accelerator_Showcase.Worker
     [FetchVariables("ApplicantName")] // fetches only the variable 'applicantName' - not the 'businessKey'
     public class AccountServiceWorker : IAsyncZeebeWorker
     {
+        private readonly IUseCaseService _useCaseService;
         private readonly ILogger<AccountServiceWorker> _logger;
 
-        public AccountServiceWorker(ILogger<AccountServiceWorker> logger)
+        public AccountServiceWorker(IUseCaseService useCaseService, ILogger<AccountServiceWorker> logger)
         {
+            _useCaseService = useCaseService;
             _logger = logger;
         }
 
@@ -24,8 +27,7 @@ namespace Zeebe_Client_Accelerator_Showcase.Worker
             // call the account service adapter
             _logger.LogInformation("Do {Action} Account for {ApplicantName}", headers.Action, variables.ApplicantName);
 
-            // done
-            return Task.CompletedTask;
+            return _useCaseService.ExecuteAsync();
         }
     }
 
@@ -33,5 +35,4 @@ namespace Zeebe_Client_Accelerator_Showcase.Worker
     {
         public string Action { get; set; }
     }
-
 }
